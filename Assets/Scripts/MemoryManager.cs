@@ -22,8 +22,12 @@ public class MemoryManager : MonoBehaviour
     public int cardsOpen = 0;
     public int playerNumber = 1;
 
+    private Sprite backGround;
+
     void Start()
     {
+        backGround = memoryPiece.GetComponent<Image>().sprite;
+
         for (int i = 0; i < images.Length; i++)
         {
             // 4. Für jedes Sprite soll einmal ein neues Prefab erstellt werden (Instantiate)
@@ -56,9 +60,14 @@ public class MemoryManager : MonoBehaviour
             {
                 Debug.Log("Richtig");
                 score++;
-                Destroy(card1.gameObject);
-                Destroy(card2.gameObject);
-
+                // Aufruf der HideRightCards Funktion
+                // 1. Name der Funktion (identifier)
+                // 2. Die leere Parameterliste (wenn kein Paremeter festgelegt)
+                // 3. Semikolon zum Ende
+                //HideRightCards();
+                //TurnOffMemoryPieces();
+                Invoke("HideRightCards",1.5f);
+                
                 if (score == images.Length)
                 {
                     Debug.Log("Wir haben gewonnen!");
@@ -66,6 +75,9 @@ public class MemoryManager : MonoBehaviour
             }
             else
             {
+                //TurnOffMemoryPieces();
+                Invoke("TurnWrongCards",1.5f);
+
                 Debug.Log("Falsch");
             }
 
@@ -88,16 +100,73 @@ public class MemoryManager : MonoBehaviour
         if (Input.GetKeyDown("a"))
         {
             Transform[] children = content.GetComponentsInChildren<Transform>();
-            Debug.Log(children.Length);
+
             for (int i = 0; i < children.Length; i++)
             {
-                Debug.Log(children[0].name);
-                Image img = children[i].GetComponent<Image>();
-                print(img);
-                MemoryPiece mp = children[i].GetComponent<MemoryPiece>();
-                print(mp);
-                //children[i].GetComponent<Image>().sprite = children[i].GetComponent<MemoryPiece>().memoryImage;
+                MemoryPiece piece = children[i].GetComponent<MemoryPiece>();
+                if (piece != null)
+                {
+                    children[i].GetComponent<Image>().sprite = children[i].GetComponent<MemoryPiece>().memoryImage;
+                }
+            }
+        }
+
+        if (Input.GetKeyDown("s"))
+        {
+            Transform[] children = content.GetComponentsInChildren<Transform>();
+
+            for (int i = 0; i < children.Length; i++)
+            {
+                MemoryPiece piece = children[i].GetComponent<MemoryPiece>();
+                if (piece != null)
+                {
+                    children[i].GetComponent<Image>().sprite = backGround;
+                }
+            }
+        }
+    }
+
+    // Deklaration einer Funktion (ohne Parameter und ohne Return Value)
+    // 1. Deklarieren auf Klassenebene (Empfehlung)
+    // 2. Deklaration -> Was soll die Funktion machen?
+    // 3. Aufruf -> Der Zeitpunkt zu dem die Funktion ausgeführt werden soll
+    // 4. Wofür brauchen wir Funktionen?
+    //    - Wiederverwendbarkeit von Code
+
+    // public -> access modifier (Zugrifssrechte)
+    // void   -> return type (Gibt uns die Funktion einen Wert zurück)
+    // HideWrongCards -> identifier (Name der Funktion -> brauchen wir beim Aufruf)
+    // ()     -> Parameterliste
+    // {}     -> scope (Was soll alles von der Funktion ausgeführt werden)
+    public void HideRightCards()
+    {
+        card1.GetComponent<Image>().enabled = false;
+        card2.GetComponent<Image>().enabled = false;
+        card1.enabled = false;
+        card2.enabled = false;
+    }
+
+    public void TurnWrongCards()
+    {
+        card1.GetComponent<Image>().sprite = backGround;
+        card2.GetComponent<Image>().sprite = backGround;
+
+    }
+
+    public void TurnOffMemoryPieces()
+    {
+        Transform[] children = content.GetComponentsInChildren<Transform>();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            MemoryPiece piece = children[i].GetComponent<MemoryPiece>();
+            if (piece != null)
+            {
+                piece.GetComponent<Image>().raycastTarget = false;
             }
         }
     }
 }
+
+// Bug 1: Wir können Zeitverzögert trotzdem noch andere Karten öffne
+// Bug 2: Die gleiche Karte kann zweimal angeklickt werden und es wird als richtig gewertet
