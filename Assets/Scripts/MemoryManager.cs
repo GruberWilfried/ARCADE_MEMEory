@@ -56,6 +56,8 @@ public class MemoryManager : MonoBehaviour
             Sprite bild1 = card1.GetComponent<Image>().sprite;
             Sprite bild2 = card2.GetComponent<Image>().sprite;
 
+            TurnOffMemoryPieces();
+            Invoke("TurnOnMemoryPieces", 1.5f);
             if (bild1 == bild2)
             {
                 Debug.Log("Richtig");
@@ -80,8 +82,6 @@ public class MemoryManager : MonoBehaviour
 
                 Debug.Log("Falsch");
             }
-
-            // card1.gameObject
 
             cardsOpen = 0;
         }
@@ -165,6 +165,43 @@ public class MemoryManager : MonoBehaviour
                 piece.GetComponent<Image>().raycastTarget = false;
             }
         }
+    }
+
+    public void TurnOnMemoryPieces()
+    {
+        Transform[] children = content.GetComponentsInChildren<Transform>();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            MemoryPiece piece = children[i].GetComponent<MemoryPiece>();
+            if (piece != null)
+            {
+                piece.GetComponent<Image>().raycastTarget = true;
+            }
+        }
+
+    }
+
+    public void TurnMemoryPieces(bool condition)
+    {
+        Transform[] children = content.GetComponentsInChildren<Transform>();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            MemoryPiece piece = children[i].GetComponent<MemoryPiece>();
+            if (piece != null)
+            {
+                piece.GetComponent<Image>().raycastTarget = condition;
+            }
+        }
+
+    }
+
+    public void ResetCardOpen()
+    {
+        cardsOpen = 0;
+        TurnMemoryPieces(true);
+        TurnMemoryPieces(false);
     }
 }
 

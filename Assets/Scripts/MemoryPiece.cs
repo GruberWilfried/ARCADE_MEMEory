@@ -26,4 +26,6 @@ public class MemoryPiece : MonoBehaviour, IPointerClickHandler
 
         GetComponent<Image>().sprite = memoryImage;
     }
+
+
 }
