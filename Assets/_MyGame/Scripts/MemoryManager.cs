@@ -5,29 +5,34 @@ using UnityEngine.UI;
 
 public class MemoryManager : MonoBehaviour
 {
-    public int score;
-
+    [Header("Settings")]
+    public bool shuffleOnStart = true;
+    public float delayCardClose = 1.5f;
+    
+    [Header("Setup")]
     // 1. Ein Prefab angeben das dupliziert werden soll
     public GameObject memoryPiece;
     // 2. Das Transform unter das meine memorypieces geparented werden sollen
     public Transform content;
     // 3. Wir möchten mehrere Sprites angeben können die erstellt werden
     public Sprite[] images;
-
     public MemoryManager mm;
 
+    [Header("Debugging")]
+    public int score;
     public MemoryPiece card1;
     public MemoryPiece card2;
-
     public int cardsOpen = 0;
     public int playerNumber = 1;
-
     private Sprite backGround;
 
     void Start()
     {
+
+        // Setup
         backGround = memoryPiece.GetComponent<Image>().sprite;
 
+        // Create the Cards
         for (int i = 0; i < images.Length; i++)
         {
             // 4. Für jedes Sprite soll einmal ein neues Prefab erstellt werden (Instantiate)
@@ -48,8 +53,15 @@ public class MemoryManager : MonoBehaviour
             piece2.transform.SetParent(content);
         }
 
+        if (shuffleOnStart)
+        {
+            Shuffle();
+        }
+
+        // Select first Button
         content.GetChild(0).GetComponent<Button>().Select();
-        
+
+
     }
 
     private void Update()
@@ -60,7 +72,7 @@ public class MemoryManager : MonoBehaviour
             Sprite bild2 = card2.GetComponent<Image>().sprite;
 
             TurnOffMemoryPieces();
-            Invoke("TurnOnMemoryPieces", 1.5f);
+            Invoke("TurnOnMemoryPieces", delayCardClose + 0.1f); // Needs to be a tad later
             if (bild1 == bild2)
             {
                 Debug.Log("Richtig");
@@ -71,7 +83,7 @@ public class MemoryManager : MonoBehaviour
                 // 3. Semikolon zum Ende
                 //HideRightCards();
                 //TurnOffMemoryPieces();
-                Invoke("HideRightCards",1.5f);
+                Invoke("HideRightCards",delayCardClose);
                 
                 if (score == images.Length)
                 {
@@ -81,7 +93,7 @@ public class MemoryManager : MonoBehaviour
             else
             {
                 //TurnOffMemoryPieces();
-                Invoke("TurnWrongCards",1.5f);
+                Invoke("TurnWrongCards", delayCardClose);
 
                 Debug.Log("Falsch");
             }
@@ -89,16 +101,10 @@ public class MemoryManager : MonoBehaviour
             cardsOpen = 0;
         }
 
-        //if (Input.GetKeyDown("space"))
-        //{
-        //    Transform[] children = content.GetComponentsInChildren<Transform>();
-
-        //    for (int i = 0; i < children.Length; i++)
-        //    {
-        //        int random = Random.Range(0,children.Length);
-        //        children[i].SetSiblingIndex(random);
-        //    }
-        //}
+        if (Input.GetKeyDown("space"))
+        {
+            //Shuffle();
+        }
 
         if (Input.GetKeyDown("a"))
         {
@@ -143,6 +149,8 @@ public class MemoryManager : MonoBehaviour
     // {}     -> scope (Was soll alles von der Funktion ausgeführt werden)
     public void HideRightCards()
     {
+        card1.GetComponent<Button>().enabled = false;
+        card2.GetComponent<Button>().enabled = false;
         card1.GetComponent<Image>().enabled = false;
         card2.GetComponent<Image>().enabled = false;
         card1.enabled = false;
@@ -183,6 +191,35 @@ public class MemoryManager : MonoBehaviour
             }
         }
 
+        SelectAnActiveButton();
+    }
+
+    public void Shuffle()
+    {
+        Transform[] children = content.GetComponentsInChildren<Transform>();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            int random = Random.Range(0, children.Length);
+            children[i].SetSiblingIndex(random);
+        }
+    }
+
+    public void SelectAnActiveButton()
+    {
+        Transform[] children = content.GetComponentsInChildren<Transform>();
+
+        for (int i = 0; i < children.Length; i++)
+        {
+            Button btn = children[i].GetComponent<Button>();
+            Image img = children[i].GetComponent<Image>();
+            if (btn != null && btn.enabled && img.enabled)
+            {
+                print(btn.gameObject.name);
+                btn.Select();
+                return;
+            }
+        }
     }
 
 }

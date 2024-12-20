@@ -259,7 +259,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f55d0a8cbb423774d8004b479fc4eb68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  score: 0
+  shuffleOnStart: 0
   memoryPiece: {fileID: 4646678156168946782, guid: e6dc818256d77584cadfa5ca244ebd98, type: 3}
   content: {fileID: 1918956342}
   images:
@@ -269,6 +269,7 @@ MonoBehaviour:
   - {fileID: 21300000, guid: af0c6a6fbbcc05b478386b6dcf24ff6c, type: 3}
   - {fileID: 21300000, guid: 45f4ac62682997144b43d05b231bd33a, type: 3}
   mm: {fileID: 548710024}
+  score: 0
   card1: {fileID: 0}
   card2: {fileID: 0}
   cardsOpen: 0
